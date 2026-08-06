@@ -551,6 +551,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const optButtons = chatOptions.querySelectorAll('.chat-opt-btn');
     optButtons.forEach(btn => {
       btn.addEventListener('click', (e) => {
+        // Special handler for the Intercom hand-off button
+        if (btn.getAttribute('data-intercom') === 'true') {
+          appendChatMsg(btn.getAttribute('data-reply') || btn.textContent, 'user');
+          chatOptions.style.display = 'none';
+          const typingMsg = appendChatMsg('Connecting you to a Softix agent...', 'bot typing');
+          setTimeout(() => {
+            typingMsg.remove();
+            appendChatMsg('You are now being connected to a live Softix agent via Intercom. The Intercom messenger will open on the right.', 'bot');
+            // Open Intercom messenger
+            if (window.SoftixIntercom && typeof window.SoftixIntercom.show === 'function') {
+              window.SoftixIntercom.show();
+            } else if (typeof Intercom === 'function') {
+              Intercom('show');
+            }
+            setTimeout(() => { chatOptions.style.display = 'flex'; }, 400);
+          }, 1200);
+          return;
+        }
+
         const userText = btn.getAttribute('data-reply');
         appendChatMsg(userText, 'user');
         chatOptions.style.display = 'none';
@@ -631,6 +650,44 @@ document.addEventListener('DOMContentLoaded', () => {
     modalOverlay.addEventListener('click', (e) => {
       if (e.target === modalOverlay) {
         closeDetailsModal();
+      }
+    });
+  }
+
+  // --- Hero Demo Video Modal ---
+  const videoModal = document.getElementById('video-modal');
+  const videoModalClose = document.getElementById('video-modal-close');
+  const demoVideo = document.getElementById('hero-demo-video');
+  const watchDemoBtn = document.getElementById('hero-watch-demo');
+
+  if (videoModal && videoModalClose && demoVideo && watchDemoBtn) {
+    watchDemoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      videoModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      if (typeof demoVideo.play === 'function') {
+        demoVideo.play().catch(() => {});
+      }
+    });
+
+    const closeVideoModal = () => {
+      videoModal.classList.remove('active');
+      document.body.style.overflow = '';
+      if (demoVideo.pause) {
+        demoVideo.pause();
+        demoVideo.currentTime = 0;
+      }
+    };
+
+    videoModalClose.addEventListener('click', closeVideoModal);
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) closeVideoModal();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && videoModal.classList.contains('active')) {
+        closeVideoModal();
       }
     });
   }
@@ -766,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
   (function typedHero() {
     const heroSpan = document.getElementById('hero-dynamic');
     if (!heroSpan) return;
-    const words = ['Accountancy', 'Analytics', 'Intelligence', 'Efficiency'];
+    const words = ['Accountancy', 'Analytics', 'Intelligence', 'Efficiency', 'Automation', 'Advisory'];
     let w = 0, i = 0, deleting = false;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) {
@@ -781,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         i++;
         if (i === full.length) {
           deleting = true;
-          setTimeout(tick, 900);
+          setTimeout(tick, 2200); // pause at full word
           return;
         }
       } else {
@@ -792,7 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
           w = (w + 1) % words.length;
         }
       }
-      setTimeout(tick, deleting ? 50 : 90);
+      setTimeout(tick, deleting ? 60 : 95);
     };
 
     // start typing after a short delay
@@ -873,6 +930,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --- Hero scroll-down indicator ---
+  const heroScrollDown = document.getElementById('hero-scroll-down');
+  if (heroScrollDown) {
+    heroScrollDown.addEventListener('click', () => {
+      const target = document.querySelector('#achievements-gallery, #services, #stories');
+      if (!target) return;
+      target.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth' });
+    });
+  }
+
   // --- Hero parallax ---
   const heroBgContainer = document.querySelector('.hero-bg-container');
   if (heroBgContainer && !prefersReduced) {
@@ -883,6 +950,190 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: true });
   }
+
+  // --- Hero video background (lazy + fallback to image on mobile / error) ---
+  (function heroVideo() {
+    const video = document.querySelector('.hero-video');
+    if (!video) return;
+    const isMobile = /Android|iPhone|iPad|iPod|Windows Phone|webOS/i.test(navigator.userAgent);
+    var prefersDataSaver = false;
+    try { prefersDataSaver = window.matchMedia('(prefers-reduced-data: reduce)').matches; } catch (e) { prefersDataSaver = false; }
+
+    // On mobile or data-saver, keep the lightweight poster image only.
+    if (isMobile || prefersDataSaver || prefersReduced) {
+      video.style.display = 'none';
+      return;
+    }
+
+    // Mute is enforced by attribute; ensure it stays muted for autoplay
+    video.muted = true;
+
+    video.addEventListener('loadeddata', () => {
+      video.classList.add('loaded');
+      if (typeof video.play === 'function') {
+        video.play().catch(() => {});
+      }
+    });
+
+    // Fallback: if video fails to load, hide it so the poster image shows
+    video.addEventListener('error', () => {
+      video.style.display = 'none';
+    });
+
+    // Attempt metadata load
+    video.load();
+  })();
+
+  // --- Hero canvas particle network ---
+  (function heroParticles() {
+    const canvas = document.getElementById('hero-particles');
+    if (!canvas || prefersReduced) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width, height, particles, mouse, animationId;
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width || window.innerWidth;
+      height = rect.height || window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    function init() {
+      resize();
+      particles = [];
+      mouse = { x: null, y: null, radius: 0 };
+      const count = Math.min(80, Math.max(40, Math.floor((width * height) / 26000)));
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          size: 1.6 + Math.random() * 2.4
+        });
+      }
+      canvas.removeEventListener('mousemove', onMove);
+      canvas.addEventListener('mousemove', onMove);
+      canvas.removeEventListener('mouseleave', onLeave);
+      canvas.addEventListener('mouseleave', onLeave);
+      window.removeEventListener('resize', resize);
+      window.addEventListener('resize', resize);
+      animationId = requestAnimationFrame(loop);
+    }
+
+    function onMove(e) {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.radius = 90;
+    }
+    function onLeave() {
+      mouse.x = null; mouse.y = null; mouse.radius = 0;
+    }
+
+    function loop() {
+      if (!particles) { animationId = requestAnimationFrame(loop); return; }
+      ctx.fillStyle = 'rgba(11, 35, 68, 0.45)';
+      ctx.fillRect(0, 0, width, height);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > width) p.vx = -p.vx;
+        if (p.y < 0 || p.y > height) p.vy = -p.vy;
+
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(46, 123, 214, 0.55)';
+        ctx.fill();
+
+        // Connect to neighbours
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 95) {
+            const opacity = 1 - dist / 95;
+            ctx.strokeStyle = `rgba(46, 123, 214, ${opacity * 0.28})`;
+            ctx.lineWidth = 0.9;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.stroke();
+          }
+        }
+
+        // Mouse hover connections
+        if (mouse.x !== null && mouse.radius) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const opacity = 1 - dist / mouse.radius;
+            ctx.strokeStyle = `rgba(74, 154, 232, ${opacity * 0.35})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationId = requestAnimationFrame(loop);
+    }
+
+    // Defer until hero image is painted, then start after a short delay
+    setTimeout(init, 1200);
+  })();
+
+  // --- Floating geometric shapes in hero ---
+  (function heroShapes() {
+    const container = document.getElementById('hero-floating-shapes');
+    if (!container || prefersReduced) return;
+    const isMobile = /Android|iPhone|iPad|iPod|Windows Phone|webOS/i.test(navigator.userAgent);
+
+    const shapeCount = isMobile ? 6 : 14;
+    const frag = document.createDocumentFragment();
+
+    for (let i = 0; i < shapeCount; i++) {
+      const el = document.createElement('div');
+      const size = 30 + Math.random() * (isMobile ? 60 : 120);
+      const isGlow = i % 5 === 0;
+
+      el.className = isGlow
+        ? 'hero-shape hero-shape--glow'
+        : 'hero-shape';
+
+      el.style.width = el.style.height = `${size}px`;
+      el.style.left = `${Math.random() * 100}%`;
+      el.style.top = `${Math.random() * 100}%`;
+      el.style.animationDuration = `${8 + Math.random() * 12}s`;
+      el.style.animationDelay = `${Math.random() * 5}s`;
+      el.style.setProperty('--r', `${(Math.random() - 0.5) * 20}deg`);
+      el.style.animationName = 'floatUpDown';
+      el.style.opacity = isGlow ? '0.35' : '0.22';
+
+      // Soft bluish tint for glow shapes, neutral for others
+      if (!isGlow) {
+        el.style.boxShadow = '0 0 14px 3px rgba(46, 123, 214, 0.12)';
+      }
+
+      frag.appendChild(el);
+    }
+    container.appendChild(frag);
+
+    // Gentle float cycle
+    const shapes = container.querySelectorAll('.hero-shape');
+    shapes.forEach((s, i) => {
+      s.style.animationDelay = `${i * 0.4 + Math.random() * 2}s`;
+    });
+  })();
 
   // --- Hero stat counters ---
   const heroCounts = document.querySelectorAll('.hero-count');
@@ -909,6 +1160,83 @@ document.addEventListener('DOMContentLoaded', () => {
   if (heroCounts.length) {
     setTimeout(() => heroCounts.forEach(animateHeroCount), prefersReduced ? 0 : 1100);
   }
+  
+  // --- Intercom Integration (via @intercom/messenger-js-sdk bundle) ---
+  // The dist/intercom.bundle.js script (loaded before script.js at runtime via
+  // the inline boot, and provides window.Intercom) initialises the widget with
+  // app_id. These settings are the initial visitor context. They can be updated
+  // at any time via SoftixIntercom.identifyUser(user).
+  var SOFTIX_INTERCOM_APP_ID = 'ju8i0hdj';
+
+  if (typeof window.intercomSettings === 'undefined') {
+    window.intercomSettings = {
+      app_id: SOFTIX_INTERCOM_APP_ID,
+      user_id: null,
+      name: null,
+      email: null,
+      created_at: null,
+      // Custom attributes you can leverage in Intercom
+      project_type: 'website-visitor'
+    };
+  }
+
+  // Boot the Intercom widget using the npm SDK wrapper (window.Intercom).
+  // The bundle is loaded before this script runs, so window.Intercom exists.
+  // After the first Intercom({...}) boot (done in the inline script), the bundle
+  // replaces window.Intercom with a queueHolder. We must avoid re-calling the
+  // init function at that point, so we guard with a boot flag.
+  var initIntercom = function () {
+    if (typeof Intercom !== 'function') {
+      console.warn('[Softix] Intercom SDK not loaded yet.');
+      return;
+    }
+    // If already booted (via the inline script), the queueHolder is in place —
+    // skip re-boot; helper methods will queue correctly.
+    if (window.__softixIntercomBooted) return;
+    Intercom({
+      app_id: SOFTIX_INTERCOM_APP_ID,
+      user_id: null,
+      name: null,
+      email: null,
+      created_at: null
+    });
+  };
+
+  // The bundle may be loaded after script.js in some setups — try booting now
+  // and also attach a listener for when the bundle signals readiness.
+  if (typeof Intercom === 'function') {
+    initIntercom();
+  }
+
+  var updateIntercomUser = function (user) {
+    if (typeof Intercom === 'function') {
+      Intercom('update', {
+        user_id: user && user.id ? user.id : null,
+        name: user && user.name ? user.name : null,
+        email: user && user.email ? user.email : null,
+        created_at: user && user.createdAt ? user.createdAt : null
+      });
+    }
+  };
+
+  window.SoftixIntercom = {
+    identifyUser: updateIntercomUser,
+    boot: function (user) {
+      if (typeof Intercom === 'function') {
+        Intercom('boot', Object.assign({ app_id: SOFTIX_INTERCOM_APP_ID }, user || {}));
+      }
+    },
+    shutdown: function () {
+      if (typeof Intercom === 'function') Intercom('shutdown');
+    },
+    show: function () { if (typeof Intercom === 'function') Intercom('show'); },
+    hide: function () { if (typeof Intercom === 'function') Intercom('hide'); },
+    showNewMessage: function (msg) { if (typeof Intercom === 'function') Intercom('showNewMessage', msg); },
+    trackEvent: function (name, val) { if (typeof Intercom === 'function') Intercom('trackEvent', name, val); }
+  };
+
+  // Listen for the bundle's readiness signal (in case it loads after this script)
+  window.addEventListener('intercom:ready', initIntercom);
 
   // --- 3D tilt on cards ---
   const tiltTargets = document.querySelectorAll('.transform-card, .project-card, .leader-card:not(.leader-card--horizontal)');

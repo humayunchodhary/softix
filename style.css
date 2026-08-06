@@ -200,6 +200,25 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-2px);
 }
 
+/* Hero "Watch Demo" video button */
+.btn-video {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+.btn-video:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(46, 123, 214, 0.28);
+}
+.btn-video svg { flex-shrink: 0; }
+
 .btn-outline {
   background-color: transparent;
   color: var(--text-dark);
@@ -465,11 +484,91 @@ body[data-theme="dark"] .logo img {
   overflow: hidden;
 }
 
+/* < 1. Video background > */
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-video.loaded {
+  opacity: 1;
+}
+
+/* < 2. Static image fallback (behind video) > */
 .hero-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background: url('assets/hero-bg.jpg') no-repeat center center/cover;
-  animation: kenBurns 20s infinite alternate ease-in-out;
+  z-index: 1;
+  animation: kenBurns 25s infinite alternate ease-in-out;
+}
+
+/* < 3. Animated gradient mesh overlay > */
+.hero-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: linear-gradient(135deg, rgba(7, 19, 36, 0.88) 0%, rgba(11, 35, 68, 0.7) 40%, rgba(2, 12, 36, 0.92) 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 14s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* < 4. Particle canvas > */
+.hero-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* < 5. Floating geometric shapes > */
+.hero-floating-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.hero-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(46, 123, 214, 0.18);
+  box-shadow: 0 0 20px 4px rgba(46, 123, 214, 0.15);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  backdrop-filter: blur(1px);
+}
+
+.hero-shape--glow {
+  background: radial-gradient(circle, rgba(74, 154, 232, 0.22) 0%, transparent 70%);
+  box-shadow: 0 0 32px 8px rgba(46, 123, 214, 0.2);
 }
 
 @keyframes kenBurns {
@@ -485,12 +584,12 @@ body[data-theme="dark"] .logo img {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, rgba(7, 19, 36, 0.94) 30%, rgba(11, 35, 68, 0.78) 100%);
-  z-index: 1;
+  z-index: 4;
 }
 
 .hero .container {
   position: relative;
-  z-index: 2;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -731,6 +830,58 @@ body[data-theme="dark"] .logo img {
 .hero-actions {
   display: flex;
   gap: 16px;
+}
+
+/* Hero scroll-down indicator */
+.hero-scroll-down {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.hero-scroll-down:hover {
+  color: #fff;
+}
+.hero-scroll-mouse {
+  width: 24px;
+  height: 44px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+}
+.hero-scroll-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  animation: scrollDot 2.4s ease-in-out infinite;
+}
+@keyframes scrollDot {
+  0% { opacity: 0; transform: translateY(-6px); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(18px); }
+}
+.hero-scroll-text {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 /* Hero Stats Banner */
@@ -1844,6 +1995,79 @@ body[data-theme="dark"] .logo img {
   background-color: var(--accent);
   color: var(--white);
 }
+#chat-intercom-btn {
+  border-color: var(--accent-light);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+#chat-intercom-btn:hover {
+  box-shadow: 0 0 8px 4px var(--accent);
+}
+
+/* Hero demo video modal */
+.video-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  padding: 24px;
+}
+.video-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.video-modal-content {
+  position: relative;
+  max-width: 960px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.5);
+  transform: scale(0.92);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.video-modal-overlay.active .video-modal-content {
+  transform: scale(1);
+}
+.video-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: var(--transition-smooth);
+}
+.video-modal-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+.video-wrapper video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 /* --- Footer --- */
 footer {
@@ -2101,6 +2325,13 @@ footer {
   .hero-tz-row {
     grid-template-columns: 1fr;
   }
+
+  /* Hide video & particles on mobile for performance */
+  .hero-video,
+  .hero-particles,
+  .hero-floating-shapes,
+  .hero-scroll-down { display: none; }
+  .hero-bg-image { animation-duration: 40s; }
   
   .industries-grid {
     grid-template-columns: 1fr;
@@ -2345,6 +2576,56 @@ footer {
 .hero.is-ready .hero-booking-card.hero-anim { transition-delay: 0.78s; }
 .hero.is-ready .hero-stats-banner.hero-anim { transition-delay: 0.95s; }
 
+/* Hero section-label draw-in from left */
+.hero .section-label.hero-anim { transform: translateX(-28px); }
+.hero.is-ready .hero .section-label.hero-anim { transform: translateX(0); }
+
+/* Dynamic typing text glow */
+.hero-dynamic-text {
+  background: linear-gradient(120deg, var(--accent), #6ba3d9, var(--accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background-size: 300% 300%;
+  animation: textGlow 3s ease infinite;
+}
+@keyframes textGlow {
+  0%,100% { background-position: 0% 50%; filter: drop-shadow(0 0 8px rgba(46,123,214,0.4)); }
+  50% { background-position: 100% 50%; filter: drop-shadow(0 0 14px rgba(46,123,214,0.7)); }
+}
+.hero-anim .typed-cursor { opacity: 1; animation: cursorBlink 1s step-end infinite; }
+@keyframes cursorBlink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0.2; } }
+
+/* Floating shape entrance */
+.hero-shape { opacity: 0; transform: scale(0.3); transition: opacity 0.9s ease, transform 0.9s ease; }
+.hero.is-ready .hero-shape { opacity: 0.85; transform: scale(1); }
+@keyframes floatUpDown { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-22px) rotate(var(--r,10deg)); } }
+.hero-shape--glow { animation: pulseGlow 6s ease-in-out infinite; }
+@keyframes pulseGlow {
+  0%,100% { opacity: 0.18; filter: blur(0); box-shadow: 0 0 20px 4px rgba(46,123,214,0.12); }
+  50% { opacity: 0.32; filter: blur(1px); box-shadow: 0 0 36px 10px rgba(46,123,214,0.22); }
+}
+
+/* Scroll-reveal utility */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1); will-change: opacity, transform; }
+.reveal.revealed,
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+.reveal-up { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1); }
+.reveal-up.revealed,
+.reveal-up.in-view { opacity: 1; transform: translateY(0); }
+
+/* Stagger helper */
+.stagger-grid > *:nth-child(1) { transition-delay: 0.08s; }
+.stagger-grid > *:nth-child(2) { transition-delay: 0.16s; }
+.stagger-grid > *:nth-child(3) { transition-delay: 0.24s; }
+.stagger-grid > *:nth-child(4) { transition-delay: 0.32s; }
+.stagger-grid > *:nth-child(5) { transition-delay: 0.40s; }
+.stagger-grid > *:nth-child(6) { transition-delay: 0.48s; }
+.stagger-grid > *:nth-child(7) { transition-delay: 0.56s; }
+.stagger-grid > *:nth-child(8) { transition-delay: 0.64s; }
+.stagger-grid > *:nth-child(9) { transition-delay: 0.72s; }
+
 /* Button ripple */
 .btn-ripple {
   position: relative;
@@ -2491,6 +2772,26 @@ img.img-reveal.loaded {
   box-shadow: 0 12px 28px rgba(37, 211, 102, 0.5);
 }
 
+/* Intercom launcher — offset from the WhatsApp FAB so they never overlap */
+@media (min-width: 768px) {
+  #intercom-launch-button,
+  .intercom-launcher {
+    bottom: 30px !important;
+    right: 30px !important;
+    left: auto !important;
+    top: auto !important;
+  }
+}
+@media (max-width: 767px) {
+  #intercom-launch-button,
+  .intercom-launcher {
+    bottom: 90px !important;
+    right: 20px !important;
+    left: auto !important;
+    top: auto !important;
+  }
+}
+
 /* Toast stack */
 .toast-stack {
   position: fixed;
@@ -2635,11 +2936,20 @@ header.scrolled .logo img {
   .chat-pulse,
   .loader-ring,
   .btn-ripple .ripple,
-  .tilt-card {
+  .tilt-card,
+  .hero-video,
+  .hero-gradient,
+  .hero-shape,
+  .hero-particles {
     animation: none !important;
     transition: none !important;
   }
+  .hero-video { display: none; }
   .hero-anim { opacity: 1; transform: none; }
+  .hero .section-label.hero-anim { transform: none; }
+  .hero-shape { opacity: 0.2; }
+  .hero-scroll-down { display: none; }
+  .hero-dynamic-text { animation: none; }
   .page-loader { display: none; }
 }
 

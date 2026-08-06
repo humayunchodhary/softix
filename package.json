@@ -1,0 +1,14 @@
+{
+  "name": "softix-website",
+  "version": "1.0.0",
+  "description": "Softix Technologies — static marketing website with Intercom integration",
+  "scripts": {
+    "build": "node build-intercom.js"
+  },
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@intercom/messenger-js-sdk": "^7.2.13",
+    "esbuild": "^0.24.0"
+  }
+}

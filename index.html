@@ -71,13 +71,41 @@
     <!-- --- Hero Section --- -->
     <section id="home" class="hero">
       <div class="hero-bg-container">
+        <!-- < 1. Video background > -->
+        <video
+          class="hero-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          poster="assets/hero-bg.jpg"
+          data-video-mobile="assets/hero-bg.jpg"
+          aria-hidden="true"
+        >
+          <source src="assets/hero-video.mp4" type="video/mp4">
+        </video>
+
+        <!-- < 2. Static image fallback (layered above video via z-index) > -->
         <div class="hero-bg-image"></div>
+
+        <!-- < 3. Animated gradient mesh overlay > -->
+        <div class="hero-gradient" aria-hidden="true"></div>
+
+        <!-- < 4. Canvas particle network > -->
+        <canvas class="hero-particles" id="hero-particles" aria-hidden="true"></canvas>
+
+        <!-- < 5. Floating geometric shapes > -->
+        <div class="hero-floating-shapes" id="hero-floating-shapes" aria-hidden="true"></div>
       </div>
       <div class="container">
         <div class="hero-layout">
           <div class="hero-content reveal-up">
             <span class="section-label hero-anim" style="color: var(--accent); margin-bottom: 20px;" data-i18n="hero_label">Software Information Experts</span>
-            <h1 class="hero-anim"><span data-i18n="hero_title_prefix">Power Your Decisions With New</span> <span id="hero-dynamic">Accountancy</span><span class="typed-cursor" aria-hidden="true">|</span></h1>
+            <h1 class="hero-anim">
+              <span data-i18n="hero_title_prefix">Power Your Decisions With New</span>
+              <span id="hero-dynamic" class="hero-dynamic-text">Accountancy</span>
+              <span class="typed-cursor" aria-hidden="true">|</span>
+            </h1>
             <ul class="hero-bullets">
               <li class="hero-anim">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -95,6 +123,10 @@
             <div class="hero-actions hero-anim">
               <a href="#hero-meeting-form" class="btn btn-primary btn-ripple" data-i18n="hero_cta1">Book a Meeting</a>
               <a href="#stories" class="btn btn-secondary btn-ripple" data-i18n="hero_cta2">Explore Products</a>
+              <button type="button" class="btn btn-video btn-ripple" id="hero-watch-demo" aria-label="Watch Softix demo video">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 4v16l12-8z"></polygon></svg>
+                <span data-i18n="hero_cta3">Watch Demo</span>
+              </button>
             </div>
           </div>
 
@@ -152,6 +184,14 @@
           </div>
         </div>
       </div>
+
+      <!-- Scroll-down indicator -->
+      <button class="hero-scroll-down hero-anim" id="hero-scroll-down" aria-label="Scroll to explore">
+        <span class="hero-scroll-text">Scroll to explore</span>
+        <span class="hero-scroll-mouse">
+          <span class="hero-scroll-dot"></span>
+        </span>
+      </button>
     </section>
 
     <!-- --- Achievements Gallery (Slideshow) --- -->
@@ -1204,10 +1244,33 @@
     <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 
+  <!-- Intercom Messenger SDK (bundled from @intercom/messenger-js-sdk npm package) -->
+  <!-- Loaded before script.js so the Intercom() helper is available on boot. -->
+  <script src="dist/intercom.bundle.js"></script>
+  <script>
+    (function () {
+      var SOFTIX_INTERCOM_APP_ID = 'ju8i0hdj';
+      // Boot Intercom using the @intercom/messenger-js-sdk npm package wrapper
+      Intercom({
+        app_id: SOFTIX_INTERCOM_APP_ID,
+        user_id: null,
+        name: null,
+        email: null,
+        created_at: null
+      });
+      // Pre-boot the global settings so the IntercomSettings object exists
+      window.intercomSettings = window.intercomSettings || {
+        app_id: SOFTIX_INTERCOM_APP_ID,
+        user_id: null,
+        name: null,
+        email: null,
+        created_at: null,
+        installation_type: 'npm-package'
+      };
+    })();
+  </script>
   <script src="i18n.js"></script>
   <script src="script.js"></script>
-
-  <!-- --- Interactive Live Chat Widget Mockup --- -->
   <div class="chat-widget" id="chat-widget">
     <div class="chat-bubble" id="chat-bubble" aria-label="Open Chat">
       <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
@@ -1223,11 +1286,12 @@
           Hello! Thanks for visiting Softix Technologies. How can I help you today?
         </div>
       </div>
-      <div class="chat-options" id="chat-options">
-        <button class="chat-opt-btn" data-reply="Tell me about your ERP products.">Tell me about ERP systems</button>
-        <button class="chat-opt-btn" data-reply="How can I request a POS demo?">Request POS Demo</button>
-        <button class="chat-opt-btn" data-reply="I want to contact sales.">Contact Sales Representative</button>
-      </div>
+        <div class="chat-options" id="chat-options">
+          <button class="chat-opt-btn" data-reply="Tell me about your ERP products.">Tell me about ERP systems</button>
+          <button class="chat-opt-btn" data-reply="How can I request a POS demo?">Request POS Demo</button>
+          <button class="chat-opt-btn" data-reply="I want to contact sales.">Contact Sales Representative</button>
+          <button class="chat-opt-btn" id="chat-intercom-btn" data-intercom="true">Chat with a Softix agent (Intercom)</button>
+        </div>
     </div>
   </div>
 
@@ -1237,6 +1301,18 @@
       <button class="modal-close" id="modal-close-btn">&times;</button>
       <div id="modal-body-content">
         <!-- Dynamic Content Injected Here via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- --- Hero Demo Video Modal --- -->
+  <div class="video-modal-overlay" id="video-modal">
+    <div class="video-modal-content">
+      <button class="video-modal-close" id="video-modal-close" aria-label="Close video">&times;</button>
+      <div class="video-wrapper">
+        <video id="hero-demo-video" autoplay muted loop playsinline>
+          <source src="assets/hero-video.mp4" type="video/mp4">
+        </video>
       </div>
     </div>
   </div>
