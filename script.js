@@ -770,7 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dotsContainer = slideshow.querySelector('.slideshow-dots');
     let idx = 0;
     let timer = null;
-    const delay = 1500; // change slides every 1.5 seconds
+    const delay = 4000; // change slides every 4 seconds
 
     // create dots
     slides.forEach((s, i) => {
@@ -808,6 +808,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const dx = e.changedTouches[0].clientX - startX;
       if (dx > 50) { prev(); resetTimer(); }
       else if (dx < -50) { next(); resetTimer(); }
+    });
+
+    // keyboard arrow navigation
+    slideshow.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { prev(); resetTimer(); }
+      else if (e.key === 'ArrowRight') { next(); resetTimer(); }
+    });
+    slideshow.setAttribute('tabindex', '0');
+    slideshow.style.outline = 'none';
+
+    // preload adjacent images for smoother transitions
+    slides.forEach((s, i) => {
+      const img = s.querySelector('img');
+      if (img) {
+        const nextImg = slides[(i + 1) % slides.length].querySelector('img');
+        if (nextImg) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = nextImg.src;
+          document.head.appendChild(link);
+        }
+      }
     });
 
     // initialize
