@@ -71,31 +71,9 @@
     <!-- --- Hero Section --- -->
     <section id="home" class="hero">
       <div class="hero-bg-container">
-        <!-- < 1. Video background > -->
-        <video
-          class="hero-video"
-          autoplay
-          muted
-          loop
-          playsinline
-          poster="assets/hero-bg.jpg"
-          data-video-mobile="assets/hero-bg.jpg"
-          aria-hidden="true"
-        >
-          <source src="assets/hero-video.mp4" type="video/mp4">
-        </video>
-
-        <!-- < 2. Static image fallback (layered above video via z-index) > -->
-        <div class="hero-bg-image"></div>
-
-        <!-- < 3. Animated gradient mesh overlay > -->
+        <!-- Static hero background (video/particles removed for performance) -->
+        <div class="hero-bg-image" role="img" aria-label="Softix hero background"></div>
         <div class="hero-gradient" aria-hidden="true"></div>
-
-        <!-- < 4. Canvas particle network > -->
-        <canvas class="hero-particles" id="hero-particles" aria-hidden="true"></canvas>
-
-        <!-- < 5. Floating geometric shapes > -->
-        <div class="hero-floating-shapes" id="hero-floating-shapes" aria-hidden="true"></div>
       </div>
       <div class="container">
         <div class="hero-layout">
@@ -266,23 +244,23 @@
     </section>
 
     <!-- --- Infinite Brand Ticker --- -->
-    <section class="logo-ticker">
+    <section class="logo-ticker" aria-label="Technology partners">
       <div class="logo-ticker-track">
-        <div class="ticker-logo">Microsoft</div>
-        <div class="ticker-logo">Salesforce</div>
-        <div class="ticker-logo">Oracle</div>
-        <div class="ticker-logo">AWS</div>
-        <div class="ticker-logo">Google<span>Cloud</span></div>
-        <div class="ticker-logo">SAP</div>
-        <div class="ticker-logo">IBM</div>
-        <!-- Duplicate elements for infinite scroll -->
-        <div class="ticker-logo">Microsoft</div>
-        <div class="ticker-logo">Salesforce</div>
-        <div class="ticker-logo">Oracle</div>
-        <div class="ticker-logo">AWS</div>
-        <div class="ticker-logo">Google<span>Cloud</span></div>
-        <div class="ticker-logo">SAP</div>
-        <div class="ticker-logo">IBM</div>
+        <div class="ticker-logo"><img src="assets/logos/microsoft.svg" alt="Microsoft" width="36" height="36"><span>Microsoft</span></div>
+        <div class="ticker-logo"><img src="assets/logos/oracle.svg" alt="Oracle" width="110" height="28"></div>
+        <div class="ticker-logo"><img src="assets/logos/aws.svg" alt="AWS" width="72" height="40"></div>
+        <div class="ticker-logo"><img src="assets/logos/salesforce.svg" alt="Salesforce" width="90" height="40"></div>
+        <div class="ticker-logo"><img src="assets/logos/google-cloud.svg" alt="Google Cloud" width="130" height="36"></div>
+        <div class="ticker-logo"><img src="assets/logos/sap.svg" alt="SAP" width="72" height="28"></div>
+        <div class="ticker-logo"><img src="assets/logos/ibm.svg" alt="IBM" width="72" height="28"></div>
+        <!-- Duplicate for infinite scroll -->
+        <div class="ticker-logo"><img src="assets/logos/microsoft.svg" alt="" width="36" height="36" aria-hidden="true"><span>Microsoft</span></div>
+        <div class="ticker-logo"><img src="assets/logos/oracle.svg" alt="" width="110" height="28" aria-hidden="true"></div>
+        <div class="ticker-logo"><img src="assets/logos/aws.svg" alt="" width="72" height="40" aria-hidden="true"></div>
+        <div class="ticker-logo"><img src="assets/logos/salesforce.svg" alt="" width="90" height="40" aria-hidden="true"></div>
+        <div class="ticker-logo"><img src="assets/logos/google-cloud.svg" alt="" width="130" height="36" aria-hidden="true"></div>
+        <div class="ticker-logo"><img src="assets/logos/sap.svg" alt="" width="72" height="28" aria-hidden="true"></div>
+        <div class="ticker-logo"><img src="assets/logos/ibm.svg" alt="" width="72" height="28" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -478,15 +456,18 @@
         <div>
           <h3 class="partnerships-title">Our Strategic Alliances</h3>
           <div class="partnerships-grid">
-            <a class="brand-logo" href="https://www.microsoft.com" target="_blank" rel="noopener">Microsoft</a>
-            <a class="brand-logo" href="https://www.salesforce.com" target="_blank" rel="noopener">Salesforce</a>
-            <a class="brand-logo" href="https://www.oracle.com" target="_blank" rel="noopener">Oracle</a>
-            <a class="brand-logo" href="https://aws.amazon.com" target="_blank" rel="noopener">AWS</a>
+            <a class="brand-logo" href="https://www.microsoft.com" target="_blank" rel="noopener"><img src="assets/logos/microsoft.svg" alt="Microsoft" width="32" height="32"><span>Microsoft</span></a>
+            <a class="brand-logo" href="https://www.oracle.com" target="_blank" rel="noopener"><img src="assets/logos/oracle.svg" alt="Oracle" width="96" height="24"></a>
+            <a class="brand-logo" href="https://aws.amazon.com" target="_blank" rel="noopener"><img src="assets/logos/aws.svg" alt="AWS" width="64" height="36"></a>
+            <a class="brand-logo" href="https://www.salesforce.com" target="_blank" rel="noopener"><img src="assets/logos/salesforce.svg" alt="Salesforce" width="88" height="36"></a>
+            <a class="brand-logo" href="https://cloud.google.com" target="_blank" rel="noopener"><img src="assets/logos/google-cloud.svg" alt="Google Cloud" width="120" height="32"></a>
+            <a class="brand-logo" href="https://www.sap.com" target="_blank" rel="noopener"><img src="assets/logos/sap.svg" alt="SAP" width="64" height="24"></a>
+            <a class="brand-logo" href="https://www.ibm.com" target="_blank" rel="noopener"><img src="assets/logos/ibm.svg" alt="IBM" width="64" height="24"></a>
             <a class="brand-logo" href="https://punjab.gov.pk" target="_blank" rel="noopener"><img src="assets/government-punjab.png" alt="Punjab Government"></a>
             <a class="brand-logo" href="https://www.pakistan.gov.pk" target="_blank" rel="noopener"><img src="assets/pakistan-govrnment.jpg" alt="Government of Pakistan"></a>
             <a class="brand-logo" href="https://softix.com.pk/" target="_blank" rel="noopener"><img src="assets/nccia.png" alt="NCCIA"></a>
             <a class="brand-logo" href="https://punjabpolice.gov.pk" target="_blank" rel="noopener"><img src="assets/punjab-police.png" alt="Punjab Police"></a>
-            <a class="brand-logo" href="#projects" target="_self" rel="noopener"><img src="assets/story-4.jpg" alt="Housing Societies"></a>
+            <a class="brand-logo" href="#projects" target="_self" rel="noopener"><img src="assets/housing.png" alt="Housing Societies"></a>
           </div>
         </div>
       </div>
@@ -672,36 +653,51 @@
     <!-- --- Leadership Section --- -->
     <section id="leadership" class="leadership-section section-padding">
       <div class="container">
-        <div class="text-center">
-          <span class="section-label">MEET OUR DIRECTORS</span>
-          <h2 class="section-title">Our Global Leadership</h2>
-          <p class="section-desc">Our leadership combines decades of experience in enterprise development, startup scaling, and tech management.</p>
+        <div class="leadership-header">
+          <h2 class="section-title leadership-title">Our Global Leadership</h2>
         </div>
-        
-        <div class="leadership-grid reveal-up stagger-grid">
-          <!-- Leader 1 -->
-          <div class="leader-card leader-card--horizontal">
-            <div class="leader-img-wrapper">
-              <img src="assets/ceo.jpg" alt="Usman Ali">
-            </div>
-            <div class="leader-info">
-              <h3 class="leader-name">Ali Usman</h3>
-              <p class="leader-role">Founder & Chief Executive Officer (CEO)</p>
-              <div class="ceo-message">
-                <p class="ceo-intro">Welcome to Softix Technologies (Pvt) Ltd. We deliver secure, scalable, and innovative software solutions that help organizations grow. Thank you for trusting us — we look forward to building a smarter digital future together.</p>
-                <p class="ceo-sign">— Ali Usman, Chief Executive Officer</p>
-              </div>
-              <div class="leader-socials">
-                <a href="#" aria-label="LinkedIn">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="#" aria-label="Twitter">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
-                </a>
-              </div>
+
+        <div class="leadership-showcase reveal-up">
+          <div class="leadership-partners">
+            <p class="leadership-partners-label">Trusted technology partners</p>
+            <div class="leadership-logos">
+              <a class="leadership-logo" href="https://www.microsoft.com" target="_blank" rel="noopener" aria-label="Microsoft">
+                <img src="assets/logos/microsoft.svg" alt="Microsoft" width="40" height="40">
+                <span>Microsoft</span>
+              </a>
+              <a class="leadership-logo" href="https://www.oracle.com" target="_blank" rel="noopener" aria-label="Oracle">
+                <img src="assets/logos/oracle.svg" alt="Oracle" width="120" height="28">
+              </a>
+              <a class="leadership-logo" href="https://aws.amazon.com" target="_blank" rel="noopener" aria-label="AWS">
+                <img src="assets/logos/aws.svg" alt="AWS" width="72" height="40">
+              </a>
+              <a class="leadership-logo" href="https://www.salesforce.com" target="_blank" rel="noopener" aria-label="Salesforce">
+                <img src="assets/logos/salesforce.svg" alt="Salesforce" width="100" height="40">
+              </a>
+              <a class="leadership-logo" href="https://cloud.google.com" target="_blank" rel="noopener" aria-label="Google Cloud">
+                <img src="assets/logos/google-cloud.svg" alt="Google Cloud" width="140" height="36">
+              </a>
+              <a class="leadership-logo" href="https://www.sap.com" target="_blank" rel="noopener" aria-label="SAP">
+                <img src="assets/logos/sap.svg" alt="SAP" width="72" height="28">
+              </a>
+              <a class="leadership-logo" href="https://www.ibm.com" target="_blank" rel="noopener" aria-label="IBM">
+                <img src="assets/logos/ibm.svg" alt="IBM" width="72" height="28">
+              </a>
             </div>
           </div>
-          
+
+          <article class="ceo-spotlight">
+            <div class="ceo-photo">
+              <img src="assets/ceo.jpg" alt="Ali Usman, Founder and CEO of Softix" width="720" height="540" loading="lazy" decoding="async">
+            </div>
+            <div class="ceo-meta">
+              <h3 class="ceo-name"><span class="ceo-name-first">Ali</span> <span class="ceo-name-last">Usman</span></h3>
+              <p class="ceo-role">Founder &amp; CEO</p>
+              <a class="ceo-linkedin" href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="Ali Usman on LinkedIn">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8.5 8.5h3.84v1.98h.05c.53-1.01 1.84-2.08 3.79-2.08 4.05 0 4.8 2.67 4.8 6.14V23h-4v-6.5c0-1.55-.03-3.54-2.16-3.54-2.16 0-2.49 1.69-2.49 3.43V23h-4V8.5z"/></svg>
+              </a>
+            </div>
+          </article>
         </div>
       </div>
     </section>
@@ -1327,7 +1323,7 @@
     <div class="video-modal-content">
       <button class="video-modal-close" id="video-modal-close" aria-label="Close video">&times;</button>
       <div class="video-wrapper">
-        <video id="hero-demo-video" autoplay muted loop playsinline>
+        <video id="hero-demo-video" muted loop playsinline preload="none">
           <source src="assets/hero-video.mp4" type="video/mp4">
         </video>
       </div>

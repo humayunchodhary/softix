@@ -336,14 +336,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- Shared rAF scroll scheduler (avoids multiple scroll listeners fighting) ---
+  let scrollRaf = 0;
+  const scrollHandlers = [];
+  const onScrollRaf = (fn) => { scrollHandlers.push(fn); };
+  window.addEventListener('scroll', () => {
+    if (scrollRaf) return;
+    scrollRaf = requestAnimationFrame(() => {
+      scrollRaf = 0;
+      const y = window.scrollY;
+      for (let i = 0; i < scrollHandlers.length; i++) scrollHandlers[i](y);
+    });
+  }, { passive: true });
+
   // --- Header Scroll Effect ---
   const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
+  onScrollRaf((y) => {
+    if (!header) return;
+    header.classList.toggle('scrolled', y > 50);
   });
 
   // --- Mobile Navigation Menu ---
@@ -377,8 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Scroll Spy for Active Navigation Link ---
   const sections = document.querySelectorAll('section[id]');
-  window.addEventListener('scroll', () => {
-    let scrollPos = window.scrollY + 100;
+  onScrollRaf((y) => {
+    let scrollPos = y + 100;
     
     sections.forEach(section => {
       const top = section.offsetTop;
@@ -900,22 +910,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Scroll Progress ---
   const progressBar = document.getElementById('scroll-progress');
-  const updateProgress = () => {
+  const updateProgress = (y) => {
     if (!progressBar) return;
     const doc = document.documentElement;
-    const scrollTop = doc.scrollTop || document.body.scrollTop;
     const height = doc.scrollHeight - doc.clientHeight;
+    const scrollTop = typeof y === 'number' ? y : (doc.scrollTop || document.body.scrollTop);
     progressBar.style.width = height > 0 ? `${(scrollTop / height) * 100}%` : '0%';
   };
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  updateProgress();
+  onScrollRaf(updateProgress);
+  updateProgress(window.scrollY);
 
   // --- Back to Top ---
   const backToTop = document.getElementById('back-to-top');
   if (backToTop) {
-    window.addEventListener('scroll', () => {
-      backToTop.classList.toggle('visible', window.scrollY > 480);
-    }, { passive: true });
+    onScrollRaf((y) => {
+      backToTop.classList.toggle('visible', y > 480);
+    });
     backToTop.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
     });
@@ -963,200 +973,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Hero parallax ---
-  const heroBgContainer = document.querySelector('.hero-bg-container');
-  if (heroBgContainer && !prefersReduced) {
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      if (y < window.innerHeight) {
-        heroBgContainer.style.transform = `translateY(${y * 0.28}px)`;
-      }
-    }, { passive: true });
-  }
-
-  // --- Hero video background (lazy + fallback to image on mobile / error) ---
-  (function heroVideo() {
-    const video = document.querySelector('.hero-video');
-    if (!video) return;
-    const isMobile = /Android|iPhone|iPad|iPod|Windows Phone|webOS/i.test(navigator.userAgent);
-    var prefersDataSaver = false;
-    try { prefersDataSaver = window.matchMedia('(prefers-reduced-data: reduce)').matches; } catch (e) { prefersDataSaver = false; }
-
-    // On mobile or data-saver, keep the lightweight poster image only.
-    if (isMobile || prefersDataSaver || prefersReduced) {
-      video.style.display = 'none';
-      return;
-    }
-
-    // Mute is enforced by attribute; ensure it stays muted for autoplay
-    video.muted = true;
-
-    video.addEventListener('loadeddata', () => {
-      video.classList.add('loaded');
-      if (typeof video.play === 'function') {
-        video.play().catch(() => {});
-      }
-    });
-
-    // Fallback: if video fails to load, hide it so the poster image shows
-    video.addEventListener('error', () => {
-      video.style.display = 'none';
-    });
-
-    // Attempt metadata load
-    video.load();
-  })();
-
-  // --- Hero canvas particle network ---
-  (function heroParticles() {
-    const canvas = document.getElementById('hero-particles');
-    if (!canvas || prefersReduced) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width, height, particles, mouse, animationId;
-
-    function resize() {
-      const rect = canvas.getBoundingClientRect();
-      width = rect.width || window.innerWidth;
-      height = rect.height || window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-
-    function init() {
-      resize();
-      particles = [];
-      mouse = { x: null, y: null, radius: 0 };
-      const count = Math.min(80, Math.max(40, Math.floor((width * height) / 26000)));
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.45,
-          vy: (Math.random() - 0.5) * 0.45,
-          size: 1.6 + Math.random() * 2.4
-        });
-      }
-      canvas.removeEventListener('mousemove', onMove);
-      canvas.addEventListener('mousemove', onMove);
-      canvas.removeEventListener('mouseleave', onLeave);
-      canvas.addEventListener('mouseleave', onLeave);
-      window.removeEventListener('resize', resize);
-      window.addEventListener('resize', resize);
-      animationId = requestAnimationFrame(loop);
-    }
-
-    function onMove(e) {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-      mouse.radius = 90;
-    }
-    function onLeave() {
-      mouse.x = null; mouse.y = null; mouse.radius = 0;
-    }
-
-    function loop() {
-      if (!particles) { animationId = requestAnimationFrame(loop); return; }
-      ctx.fillStyle = 'rgba(11, 35, 68, 0.45)';
-      ctx.fillRect(0, 0, width, height);
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > width) p.vx = -p.vx;
-        if (p.y < 0 || p.y > height) p.vy = -p.vy;
-
-        // Draw particle
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(46, 123, 214, 0.55)';
-        ctx.fill();
-
-        // Connect to neighbours
-        for (let j = i + 1; j < particles.length; j++) {
-          const q = particles[j];
-          const dx = p.x - q.x;
-          const dy = p.y - q.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 95) {
-            const opacity = 1 - dist / 95;
-            ctx.strokeStyle = `rgba(46, 123, 214, ${opacity * 0.28})`;
-            ctx.lineWidth = 0.9;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(q.x, q.y);
-            ctx.stroke();
-          }
-        }
-
-        // Mouse hover connections
-        if (mouse.x !== null && mouse.radius) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < mouse.radius) {
-            const opacity = 1 - dist / mouse.radius;
-            ctx.strokeStyle = `rgba(74, 154, 232, ${opacity * 0.35})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      animationId = requestAnimationFrame(loop);
-    }
-
-    // Defer until hero image is painted, then start after a short delay
-    setTimeout(init, 1200);
-  })();
-
-  // --- Floating geometric shapes in hero ---
-  (function heroShapes() {
-    const container = document.getElementById('hero-floating-shapes');
-    if (!container || prefersReduced) return;
-    const isMobile = /Android|iPhone|iPad|iPod|Windows Phone|webOS/i.test(navigator.userAgent);
-
-    const shapeCount = isMobile ? 6 : 14;
-    const frag = document.createDocumentFragment();
-
-    for (let i = 0; i < shapeCount; i++) {
-      const el = document.createElement('div');
-      const size = 30 + Math.random() * (isMobile ? 60 : 120);
-      const isGlow = i % 5 === 0;
-
-      el.className = isGlow
-        ? 'hero-shape hero-shape--glow'
-        : 'hero-shape';
-
-      el.style.width = el.style.height = `${size}px`;
-      el.style.left = `${Math.random() * 100}%`;
-      el.style.top = `${Math.random() * 100}%`;
-      el.style.animationDuration = `${8 + Math.random() * 12}s`;
-      el.style.animationDelay = `${Math.random() * 5}s`;
-      el.style.setProperty('--r', `${(Math.random() - 0.5) * 20}deg`);
-      el.style.animationName = 'floatUpDown';
-      el.style.opacity = isGlow ? '0.35' : '0.22';
-
-      // Soft bluish tint for glow shapes, neutral for others
-      if (!isGlow) {
-        el.style.boxShadow = '0 0 14px 3px rgba(46, 123, 214, 0.12)';
-      }
-
-      frag.appendChild(el);
-    }
-    container.appendChild(frag);
-
-    // Gentle float cycle
-    const shapes = container.querySelectorAll('.hero-shape');
-    shapes.forEach((s, i) => {
-      s.style.animationDelay = `${i * 0.4 + Math.random() * 2}s`;
-    });
-  })();
+  // Hero video / particles / floating shapes / parallax removed for performance.
 
   // --- Hero stat counters ---
   const heroCounts = document.querySelectorAll('.hero-count');

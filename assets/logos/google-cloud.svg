@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" role="img" aria-label="Google Cloud">
+  <circle cx="18" cy="20" r="8" fill="#4285F4"/>
+  <circle cx="30" cy="14" r="6" fill="#EA4335"/>
+  <circle cx="30" cy="26" r="6" fill="#FBBC05"/>
+  <circle cx="40" cy="20" r="7" fill="#34A853"/>
+  <text x="52" y="25" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="600" fill="#5F6368">Google Cloud</text>
+</svg>

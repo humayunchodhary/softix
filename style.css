@@ -484,24 +484,7 @@ body[data-theme="dark"] .logo img {
   overflow: hidden;
 }
 
-/* < 1. Video background > */
-.hero-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-.hero-video.loaded {
-  opacity: 1;
-}
-
-/* < 2. Static image fallback (behind video) > */
+/* Static hero background — no video / particles / ken-burns (perf) */
 .hero-bg-image {
   position: absolute;
   top: 0;
@@ -510,10 +493,9 @@ body[data-theme="dark"] .logo img {
   height: 100%;
   background: url('assets/hero-bg.jpg') no-repeat center center/cover;
   z-index: 1;
-  animation: kenBurns 25s infinite alternate ease-in-out;
+  transform: translateZ(0);
 }
 
-/* < 3. Animated gradient mesh overlay > */
 .hero-gradient {
   position: absolute;
   top: 0;
@@ -522,58 +504,7 @@ body[data-theme="dark"] .logo img {
   height: 100%;
   z-index: 2;
   background: linear-gradient(135deg, rgba(7, 19, 36, 0.88) 0%, rgba(11, 35, 68, 0.7) 40%, rgba(2, 12, 36, 0.92) 100%);
-  background-size: 200% 200%;
-  animation: gradientShift 14s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* < 4. Particle canvas > */
-.hero-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3;
   pointer-events: none;
-}
-
-/* < 5. Floating geometric shapes > */
-.hero-floating-shapes {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.hero-shape {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(46, 123, 214, 0.18);
-  box-shadow: 0 0 20px 4px rgba(46, 123, 214, 0.15);
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  backdrop-filter: blur(1px);
-}
-
-.hero-shape--glow {
-  background: radial-gradient(circle, rgba(74, 154, 232, 0.22) 0%, transparent 70%);
-  box-shadow: 0 0 32px 8px rgba(46, 123, 214, 0.2);
-}
-
-@keyframes kenBurns {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.08); }
 }
 
 .hero::before {
@@ -610,9 +541,8 @@ body[data-theme="dark"] .logo img {
 }
 
 .hero-booking-card {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(11, 25, 44, 0.72);
+  /* backdrop-filter removed — heavy on GPU while scrolling */
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-lg);
   padding: 28px;
@@ -955,24 +885,39 @@ body[data-theme="dark"] .logo img {
 }
 
 .ticker-logo {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
-  color: var(--text-light);
-  filter: grayscale(1);
-  opacity: 0.5;
-  transition: var(--transition-smooth);
+  color: var(--text-muted);
+  opacity: 0.72;
+  transition: opacity 0.25s ease, transform 0.25s ease;
   display: inline-flex;
   align-items: center;
+  gap: 10px;
+  height: 40px;
+}
+
+.ticker-logo img {
+  height: 28px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  display: block;
+  filter: grayscale(0.35);
 }
 
 .ticker-logo:hover {
-  filter: grayscale(0);
   opacity: 1;
   color: var(--text-dark);
+  transform: translateY(-2px);
+}
+
+.ticker-logo:hover img {
+  filter: none;
 }
 
 .ticker-logo span {
-  color: var(--accent);
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
 }
 
 @keyframes scrollTicker {
@@ -1204,15 +1149,19 @@ body[data-theme="dark"] .logo img {
   justify-content: center;
   gap: 10px;
   padding: 10px 14px;
-  max-width: 160px;
+  max-width: 180px;
   width: 100%;
+  min-height: 56px;
   background: var(--white);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: var(--shadow-sm);
   color: var(--text-dark);
+  font-weight: 700;
+  font-size: 13px;
 }
-.brand-logo img { max-height: 36px; object-fit: contain; display:block; }
+.brand-logo img { max-height: 36px; width: auto; object-fit: contain; display:block; }
+.brand-logo:hover { border-color: var(--accent); }
 
 @media (min-width: 1000px) {
   .awards-grid { grid-template-columns: repeat(4, 1fr); }
@@ -1575,12 +1524,185 @@ body[data-theme="dark"] .logo img {
 }
 
 /* --- Leadership Section --- */
+.leadership-section {
+  background: var(--white);
+}
+
+.leadership-header {
+  margin-bottom: 36px;
+}
+
+.leadership-title {
+  text-align: left;
+  margin-bottom: 0;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.leadership-showcase {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(280px, 420px);
+  gap: 48px 64px;
+  align-items: end;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.leadership-partners-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.leadership-logos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  align-items: center;
+}
+
+.leadership-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-light);
+  transition: border-color 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+}
+
+.leadership-logo img {
+  height: 28px;
+  width: auto;
+  max-width: 130px;
+  object-fit: contain;
+}
+
+.leadership-logo span {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.leadership-logo:hover {
+  border-color: var(--accent);
+  background: var(--white);
+  transform: translateY(-2px);
+}
+
+.ceo-spotlight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.ceo-photo {
+  width: 100%;
+  max-width: 380px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 70%);
+}
+
+.ceo-photo img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.ceo-meta {
+  width: 100%;
+  max-width: 380px;
+}
+
+.ceo-name {
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.ceo-name-first {
+  color: var(--text-dark);
+}
+
+.ceo-name-last {
+  color: #14b8a6;
+}
+
+body[data-theme="dark"] .leadership-section {
+  background: var(--white);
+}
+
+body[data-theme="dark"] .leadership-logo {
+  background: var(--card-bg);
+}
+
+body[data-theme="dark"] .ceo-photo {
+  background: linear-gradient(180deg, #0f243e 0%, var(--white) 70%);
+}
+
+body[data-theme="dark"] .ceo-name-last {
+  color: #2dd4bf;
+}
+
+.ceo-role {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+}
+
+.ceo-linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #0a66c2;
+  border-radius: 4px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.ceo-linkedin:hover {
+  transform: translateY(-1px);
+  opacity: 0.85;
+}
+
 .leadership-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 40px;
   max-width: 1100px;
   margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .leadership-showcase {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .ceo-spotlight,
+  .ceo-photo,
+  .ceo-meta {
+    max-width: none;
+  }
+
+  .leadership-title {
+    text-align: left;
+  }
 }
 
 .team-grid {
@@ -2414,12 +2536,7 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  /* Hide video & particles on mobile for performance */
-  .hero-video,
-  .hero-particles,
-  .hero-floating-shapes,
   .hero-scroll-down { display: none; }
-  .hero-bg-image { animation-duration: 40s; }
   
   .industries-grid {
     grid-template-columns: 1fr;
@@ -3027,17 +3144,12 @@ header.scrolled .logo img {
   .loader-ring,
   .btn-ripple .ripple,
   .tilt-card,
-  .hero-video,
-  .hero-gradient,
-  .hero-shape,
-  .hero-particles {
+  .logo-ticker-track {
     animation: none !important;
     transition: none !important;
   }
-  .hero-video { display: none; }
   .hero-anim { opacity: 1; transform: none; }
   .hero .section-label.hero-anim { transform: none; }
-  .hero-shape { opacity: 0.2; }
   .hero-scroll-down { display: none; }
   .hero-dynamic-text { animation: none; }
   .page-loader { display: none; }
