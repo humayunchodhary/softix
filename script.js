@@ -283,16 +283,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // --- Dark/Light Theme Switcher ---
-  const themeToggles = document.querySelectorAll('.theme-toggle-btn');
-  const sunIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-  const moonIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-  
+  // --- Initialize theme (light by default) ---
   let activeTheme = localStorage.getItem('theme') || 'light';
   document.body.setAttribute('data-theme', activeTheme);
-  themeToggles.forEach(btn => { btn.innerHTML = activeTheme === 'dark' ? sunIcon : moonIcon; });
 
-  // Logo swap helper: use data attributes on the img for light/dark variants
+  // --- Logo swap helper ---
   const siteLogo = document.getElementById('site-logo');
   const setLogoForTheme = (theme) => {
     if (!siteLogo) return;
@@ -300,28 +295,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const darkSrc = siteLogo.getAttribute('data-logo-dark') || lightSrc;
 
     const chosen = theme === 'dark' ? darkSrc : lightSrc;
-    // try to preload chosen image; if it fails, keep existing and remove filters
     const img = new Image();
     img.onload = () => { siteLogo.src = chosen; siteLogo.style.filter = ''; };
     img.onerror = () => {
-      // fallback: remove CSS filters so original logo remains visible
       siteLogo.style.filter = 'none';
     };
     img.src = chosen;
   };
 
-  // Apply initial logo according to stored theme
   setLogoForTheme(activeTheme);
 
-  const toggleTheme = () => {
-    activeTheme = activeTheme === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', activeTheme);
-    themeToggles.forEach(btn => { btn.innerHTML = activeTheme === 'dark' ? sunIcon : moonIcon; });
-    localStorage.setItem('theme', activeTheme);
-    setLogoForTheme(activeTheme);
-  };
-
-  themeToggles.forEach(btn => { btn.addEventListener('click', toggleTheme); });
 
   // Sync product card summaries with detailsData descriptions
   const storyCards = document.querySelectorAll('.story-card');
@@ -1610,44 +1593,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- Language toggle EN / UR ---
-  (function languageToggle() {
-    const dict = window.SOFTIX_I18N;
-    if (!dict) return;
-
-    window.softixLang = localStorage.getItem('softix_lang') || 'en';
-
-    const applyLang = (lang) => {
-      window.softixLang = lang;
-      localStorage.setItem('softix_lang', lang);
-      const pack = dict[lang];
-      document.documentElement.lang = pack.lang;
-      document.documentElement.dir = pack.dir;
-      document.body.classList.toggle('lang-ur', lang === 'ur');
-
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (pack[key] != null) el.textContent = pack[key];
-      });
-
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (pack[key] != null) el.placeholder = pack[key];
-      });
-
-      document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
-        btn.textContent = pack.lang_btn;
-      });
-    };
-
-    applyLang(window.softixLang);
-
-    document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        applyLang(window.softixLang === 'en' ? 'ur' : 'en');
-      });
-    });
-  })();
+  // --- (Language toggle removed) ---
 });
 
 
